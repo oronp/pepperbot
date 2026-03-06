@@ -1,6 +1,6 @@
-# nanobot Skills
+# pepperbot Skills
 
-This directory contains built-in skills that extend nanobot's capabilities.
+This directory contains built-in skills that extend pepperbot's capabilities.
 
 ## Skill Format
 
