@@ -9,11 +9,11 @@ import httpx
 import websockets
 from loguru import logger
 
-from nanobot.bus.events import OutboundMessage
-from nanobot.bus.queue import MessageBus
-from nanobot.channels.base import BaseChannel
-from nanobot.config.schema import DiscordConfig
-from nanobot.utils.helpers import split_message
+from pepperbot.bus.events import OutboundMessage
+from pepperbot.bus.queue import MessageBus
+from pepperbot.channels.base import BaseChannel
+from pepperbot.config.schema import DiscordConfig
+from pepperbot.utils.helpers import split_message
 
 DISCORD_API_BASE = "https://discord.com/api/v10"
 MAX_ATTACHMENT_BYTES = 20 * 1024 * 1024  # 20MB
@@ -176,9 +176,9 @@ class DiscordChannel(BaseChannel):
                 "token": self.config.token,
                 "intents": self.config.intents,
                 "properties": {
-                    "os": "nanobot",
-                    "browser": "nanobot",
-                    "device": "nanobot",
+                    "os": "pepperbot",
+                    "browser": "pepperbot",
+                    "device": "pepperbot",
                 },
             },
         }
@@ -225,7 +225,7 @@ class DiscordChannel(BaseChannel):
 
         content_parts = [content] if content else []
         media_paths: list[str] = []
-        media_dir = Path.home() / ".nanobot" / "media"
+        media_dir = Path.home() / ".pepperbot" / "media"
 
         for attachment in payload.get("attachments") or []:
             url = attachment.get("url")

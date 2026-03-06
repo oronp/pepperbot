@@ -4,7 +4,7 @@ import difflib
 from pathlib import Path
 from typing import Any
 
-from nanobot.agent.tools.base import Tool
+from pepperbot.agent.tools.base import Tool
 
 
 def _resolve_path(

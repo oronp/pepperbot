@@ -1,4 +1,4 @@
-"""Utility functions for nanobot."""
+"""Utility functions for pepperbot."""
 
 import re
 from datetime import datetime
@@ -25,13 +25,13 @@ def ensure_dir(path: Path) -> Path:
 
 
 def get_data_path() -> Path:
-    """~/.nanobot data directory."""
-    return ensure_dir(Path.home() / ".nanobot")
+    """~/.pepperbot data directory."""
+    return ensure_dir(Path.home() / ".pepperbot")
 
 
 def get_workspace_path(workspace: str | None = None) -> Path:
-    """Resolve and ensure workspace path. Defaults to ~/.nanobot/workspace."""
-    path = Path(workspace).expanduser() if workspace else Path.home() / ".nanobot" / "workspace"
+    """Resolve and ensure workspace path. Defaults to ~/.pepperbot/workspace."""
+    path = Path(workspace).expanduser() if workspace else Path.home() / ".pepperbot" / "workspace"
     return ensure_dir(path)
 
 
@@ -83,7 +83,7 @@ def sync_workspace_templates(workspace: Path, silent: bool = False) -> list[str]
     """Sync bundled templates to workspace. Only creates missing files."""
     from importlib.resources import files as pkg_files
     try:
-        tpl = pkg_files("nanobot") / "templates"
+        tpl = pkg_files("pepperbot") / "templates"
     except Exception:
         return []
     if not tpl.is_dir():

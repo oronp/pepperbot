@@ -3,9 +3,9 @@
 from contextvars import ContextVar
 from typing import Any
 
-from nanobot.agent.tools.base import Tool
-from nanobot.cron.service import CronService
-from nanobot.cron.types import CronSchedule
+from pepperbot.agent.tools.base import Tool
+from pepperbot.cron.service import CronService
+from pepperbot.cron.types import CronSchedule
 
 
 class CronTool(Tool):

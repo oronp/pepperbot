@@ -3,17 +3,17 @@
 import json
 from pathlib import Path
 
-from nanobot.config.schema import Config
+from pepperbot.config.schema import Config
 
 
 def get_config_path() -> Path:
     """Get the default configuration file path."""
-    return Path.home() / ".nanobot" / "config.json"
+    return Path.home() / ".pepperbot" / "config.json"
 
 
 def get_data_dir() -> Path:
-    """Get the nanobot data directory."""
-    from nanobot.utils.helpers import get_data_path
+    """Get the pepperbot data directory."""
+    from pepperbot.utils.helpers import get_data_path
     return get_data_path()
 
 

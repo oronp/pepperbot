@@ -6,10 +6,10 @@ from collections import OrderedDict
 
 from loguru import logger
 
-from nanobot.bus.events import OutboundMessage
-from nanobot.bus.queue import MessageBus
-from nanobot.channels.base import BaseChannel
-from nanobot.config.schema import WhatsAppConfig
+from pepperbot.bus.events import OutboundMessage
+from pepperbot.bus.queue import MessageBus
+from pepperbot.channels.base import BaseChannel
+from pepperbot.config.schema import WhatsAppConfig
 
 
 class WhatsAppChannel(BaseChannel):

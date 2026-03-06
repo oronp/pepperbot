@@ -11,10 +11,10 @@ from typing import Any
 
 from loguru import logger
 
-from nanobot.bus.events import OutboundMessage
-from nanobot.bus.queue import MessageBus
-from nanobot.channels.base import BaseChannel
-from nanobot.config.schema import FeishuConfig
+from pepperbot.bus.events import OutboundMessage
+from pepperbot.bus.queue import MessageBus
+from pepperbot.channels.base import BaseChannel
+from pepperbot.config.schema import FeishuConfig
 
 import importlib.util
 
@@ -715,7 +715,7 @@ class FeishuChannel(BaseChannel):
             (file_path, content_text) - file_path is None if download failed
         """
         loop = asyncio.get_running_loop()
-        media_dir = Path.home() / ".nanobot" / "media"
+        media_dir = Path.home() / ".pepperbot" / "media"
         media_dir.mkdir(parents=True, exist_ok=True)
 
         data, filename = None, None

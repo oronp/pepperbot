@@ -1,4 +1,4 @@
-"""CLI commands for nanobot."""
+"""CLI commands for pepperbot."""
 
 import asyncio
 import os
@@ -29,13 +29,13 @@ from rich.markdown import Markdown
 from rich.table import Table
 from rich.text import Text
 
-from nanobot import __logo__, __version__
-from nanobot.config.schema import Config
-from nanobot.utils.helpers import sync_workspace_templates
+from pepperbot import __logo__, __version__
+from pepperbot.config.schema import Config
+from pepperbot.utils.helpers import sync_workspace_templates
 
 app = typer.Typer(
-    name="nanobot",
-    help=f"{__logo__} nanobot - Personal AI Assistant",
+    name="pepperbot",
+    help=f"{__logo__} pepperbot - Personal AI Assistant",
     no_args_is_help=True,
 )
 
@@ -99,7 +99,7 @@ def _init_prompt_session() -> None:
     except Exception:
         pass
 
-    history_file = Path.home() / ".nanobot" / "history" / "cli_history"
+    history_file = Path.home() / ".pepperbot" / "history" / "cli_history"
     history_file.parent.mkdir(parents=True, exist_ok=True)
 
     _PROMPT_SESSION = PromptSession(
@@ -114,7 +114,7 @@ def _print_agent_response(response: str, render_markdown: bool) -> None:
     content = response or ""
     body = Markdown(content) if render_markdown else Text(content)
     console.print()
-    console.print(f"[cyan]{__logo__} nanobot[/cyan]")
+    console.print(f"[cyan]{__logo__} pepperbot[/cyan]")
     console.print(body)
     console.print()
 
@@ -146,7 +146,7 @@ async def _read_interactive_input_async() -> str:
 
 def version_callback(value: bool):
     if value:
-        console.print(f"{__logo__} nanobot v{__version__}")
+        console.print(f"{__logo__} pepperbot v{__version__}")
         raise typer.Exit()
 
 
@@ -156,7 +156,7 @@ def main(
         None, "--version", "-v", callback=version_callback, is_eager=True
     ),
 ):
-    """nanobot - Personal AI Assistant."""
+    """pepperbot - Personal AI Assistant."""
     pass
 
 
@@ -167,10 +167,10 @@ def main(
 
 @app.command()
 def onboard():
-    """Initialize nanobot configuration and workspace."""
-    from nanobot.config.loader import get_config_path, load_config, save_config
-    from nanobot.config.schema import Config
-    from nanobot.utils.helpers import get_workspace_path
+    """Initialize pepperbot configuration and workspace."""
+    from pepperbot.config.loader import get_config_path, load_config, save_config
+    from pepperbot.config.schema import Config
+    from pepperbot.utils.helpers import get_workspace_path
 
     config_path = get_config_path()
 
@@ -199,12 +199,12 @@ def onboard():
 
     sync_workspace_templates(workspace)
 
-    console.print(f"\n{__logo__} nanobot is ready!")
+    console.print(f"\n{__logo__} pepperbot is ready!")
     console.print("\nNext steps:")
-    console.print("  1. Add your API key to [cyan]~/.nanobot/config.json[/cyan]")
+    console.print("  1. Add your API key to [cyan]~/.pepperbot/config.json[/cyan]")
     console.print("     Get one at: https://openrouter.ai/keys")
-    console.print("  2. Chat: [cyan]nanobot agent -m \"Hello!\"[/cyan]")
-    console.print("\n[dim]Want Telegram/WhatsApp? See: https://github.com/HKUDS/nanobot#-chat-apps[/dim]")
+    console.print("  2. Chat: [cyan]pepperbot agent -m \"Hello!\"[/cyan]")
+    console.print("\n[dim]Want Telegram/WhatsApp? See: https://github.com/HKUDS/pepperbot#-chat-apps[/dim]")
 
 
 
@@ -212,7 +212,7 @@ def onboard():
 
 def _make_provider(config: Config):
     """Create the appropriate LLM provider from config."""
-    from nanobot.providers.openai_codex_provider import OpenAICodexProvider
+    from pepperbot.providers.openai_codex_provider import OpenAICodexProvider
 
     model = config.agents.defaults.model
     provider_name = config.get_provider_name(model)
@@ -223,7 +223,7 @@ def _make_provider(config: Config):
         return OpenAICodexProvider(default_model=model)
 
     # Custom: direct OpenAI-compatible endpoint, bypasses LiteLLM
-    from nanobot.providers.custom_provider import CustomProvider
+    from pepperbot.providers.custom_provider import CustomProvider
     if provider_name == "custom":
         return CustomProvider(
             api_key=p.api_key if p else "no-key",
@@ -231,12 +231,12 @@ def _make_provider(config: Config):
             default_model=model,
         )
 
-    from nanobot.providers.litellm_provider import LiteLLMProvider
-    from nanobot.providers.registry import find_by_name
+    from pepperbot.providers.litellm_provider import LiteLLMProvider
+    from pepperbot.providers.registry import find_by_name
     spec = find_by_name(provider_name)
     if not model.startswith("bedrock/") and not (p and p.api_key) and not (spec and spec.is_oauth):
         console.print("[red]Error: No API key configured.[/red]")
-        console.print("Set one in ~/.nanobot/config.json under providers section")
+        console.print("Set one in ~/.pepperbot/config.json under providers section")
         raise typer.Exit(1)
 
     return LiteLLMProvider(
@@ -260,15 +260,15 @@ def gateway(
     config: str | None = typer.Option(None, "--config", "-c", help="Config file path"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Verbose output"),
 ):
-    """Start the nanobot gateway."""
-    from nanobot.agent.loop import AgentLoop
-    from nanobot.bus.queue import MessageBus
-    from nanobot.channels.manager import ChannelManager
-    from nanobot.config.loader import load_config
-    from nanobot.cron.service import CronService
-    from nanobot.cron.types import CronJob
-    from nanobot.heartbeat.service import HeartbeatService
-    from nanobot.session.manager import SessionManager
+    """Start the pepperbot gateway."""
+    from pepperbot.agent.loop import AgentLoop
+    from pepperbot.bus.queue import MessageBus
+    from pepperbot.channels.manager import ChannelManager
+    from pepperbot.config.loader import load_config
+    from pepperbot.cron.service import CronService
+    from pepperbot.cron.types import CronJob
+    from pepperbot.heartbeat.service import HeartbeatService
+    from pepperbot.session.manager import SessionManager
 
     if verbose:
         import logging
@@ -279,7 +279,7 @@ def gateway(
     if workspace:
         config.agents.defaults.workspace = workspace
 
-    console.print(f"{__logo__} Starting nanobot gateway on port {port}...")
+    console.print(f"{__logo__} Starting pepperbot gateway on port {port}...")
     sync_workspace_templates(config.workspace_path)
     bus = MessageBus()
     provider = _make_provider(config)
@@ -314,8 +314,8 @@ def gateway(
     # Set cron callback (needs agent)
     async def on_cron_job(job: CronJob) -> str | None:
         """Execute a cron job through the agent."""
-        from nanobot.agent.tools.cron import CronTool
-        from nanobot.agent.tools.message import MessageTool
+        from pepperbot.agent.tools.cron import CronTool
+        from pepperbot.agent.tools.message import MessageTool
         reminder_note = (
             "[Scheduled Task] Timer finished.\n\n"
             f"Task '{job.name}' has been triggered.\n"
@@ -343,7 +343,7 @@ def gateway(
             return response
 
         if job.payload.deliver and job.payload.to and response:
-            from nanobot.bus.events import OutboundMessage
+            from pepperbot.bus.events import OutboundMessage
             await bus.publish_outbound(OutboundMessage(
                 channel=job.payload.channel or "cli",
                 chat_id=job.payload.to,
@@ -389,7 +389,7 @@ def gateway(
 
     async def on_heartbeat_notify(response: str) -> None:
         """Deliver a heartbeat response to the user's channel."""
-        from nanobot.bus.events import OutboundMessage
+        from pepperbot.bus.events import OutboundMessage
         channel, chat_id = _pick_heartbeat_target()
         if channel == "cli":
             return  # No external channel available to deliver to
@@ -449,15 +449,15 @@ def agent(
     message: str = typer.Option(None, "--message", "-m", help="Message to send to the agent"),
     session_id: str = typer.Option("cli:direct", "--session", "-s", help="Session ID"),
     markdown: bool = typer.Option(True, "--markdown/--no-markdown", help="Render assistant output as Markdown"),
-    logs: bool = typer.Option(False, "--logs/--no-logs", help="Show nanobot runtime logs during chat"),
+    logs: bool = typer.Option(False, "--logs/--no-logs", help="Show pepperbot runtime logs during chat"),
 ):
     """Interact with the agent directly."""
     from loguru import logger
 
-    from nanobot.agent.loop import AgentLoop
-    from nanobot.bus.queue import MessageBus
-    from nanobot.config.loader import get_data_dir, load_config
-    from nanobot.cron.service import CronService
+    from pepperbot.agent.loop import AgentLoop
+    from pepperbot.bus.queue import MessageBus
+    from pepperbot.config.loader import get_data_dir, load_config
+    from pepperbot.cron.service import CronService
 
     config = load_config()
     sync_workspace_templates(config.workspace_path)
@@ -470,9 +470,9 @@ def agent(
     cron = CronService(cron_store_path)
 
     if logs:
-        logger.enable("nanobot")
+        logger.enable("pepperbot")
     else:
-        logger.disable("nanobot")
+        logger.disable("pepperbot")
 
     agent_loop = AgentLoop(
         bus=bus,
@@ -499,7 +499,7 @@ def agent(
             from contextlib import nullcontext
             return nullcontext()
         # Animated spinner is safe to use with prompt_toolkit input handling
-        return console.status("[dim]nanobot is thinking...[/dim]", spinner="dots")
+        return console.status("[dim]pepperbot is thinking...[/dim]", spinner="dots")
 
     async def _cli_progress(content: str, *, tool_hint: bool = False) -> None:
         ch = agent_loop.channels_config
@@ -520,7 +520,7 @@ def agent(
         asyncio.run(run_once())
     else:
         # Interactive mode — route through bus like other channels
-        from nanobot.bus.events import InboundMessage
+        from pepperbot.bus.events import InboundMessage
         _init_prompt_session()
         console.print(f"{__logo__} Interactive mode (type [bold]exit[/bold] or [bold]Ctrl+C[/bold] to quit)\n")
 
@@ -636,7 +636,7 @@ app.add_typer(channels_app, name="channels")
 @channels_app.command("status")
 def channels_status():
     """Show channel status."""
-    from nanobot.config.loader import load_config
+    from pepperbot.config.loader import load_config
 
     config = load_config()
 
@@ -732,7 +732,7 @@ def _get_bridge_dir() -> Path:
     import subprocess
 
     # User's bridge location
-    user_bridge = Path.home() / ".nanobot" / "bridge"
+    user_bridge = Path.home() / ".pepperbot" / "bridge"
 
     # Check if already built
     if (user_bridge / "dist" / "index.js").exists():
@@ -744,7 +744,7 @@ def _get_bridge_dir() -> Path:
         raise typer.Exit(1)
 
     # Find source bridge: first check package data, then source dir
-    pkg_bridge = Path(__file__).parent.parent / "bridge"  # nanobot/bridge (installed)
+    pkg_bridge = Path(__file__).parent.parent / "bridge"  # pepperbot/bridge (installed)
     src_bridge = Path(__file__).parent.parent.parent / "bridge"  # repo root/bridge (dev)
 
     source = None
@@ -755,7 +755,7 @@ def _get_bridge_dir() -> Path:
 
     if not source:
         console.print("[red]Bridge source not found.[/red]")
-        console.print("Try reinstalling: pip install --force-reinstall nanobot")
+        console.print("Try reinstalling: pip install --force-reinstall pepperbot")
         raise typer.Exit(1)
 
     console.print(f"{__logo__} Setting up bridge...")
@@ -789,7 +789,7 @@ def channels_login():
     """Link device via QR code."""
     import subprocess
 
-    from nanobot.config.loader import load_config
+    from pepperbot.config.loader import load_config
 
     config = load_config()
     bridge_dir = _get_bridge_dir()
@@ -816,20 +816,20 @@ def channels_login():
 
 @app.command()
 def status():
-    """Show nanobot status."""
-    from nanobot.config.loader import get_config_path, load_config
+    """Show pepperbot status."""
+    from pepperbot.config.loader import get_config_path, load_config
 
     config_path = get_config_path()
     config = load_config()
     workspace = config.workspace_path
 
-    console.print(f"{__logo__} nanobot Status\n")
+    console.print(f"{__logo__} pepperbot Status\n")
 
     console.print(f"Config: {config_path} {'[green]✓[/green]' if config_path.exists() else '[red]✗[/red]'}")
     console.print(f"Workspace: {workspace} {'[green]✓[/green]' if workspace.exists() else '[red]✗[/red]'}")
 
     if config_path.exists():
-        from nanobot.providers.registry import PROVIDERS
+        from pepperbot.providers.registry import PROVIDERS
 
         console.print(f"Model: {config.agents.defaults.model}")
 
@@ -874,7 +874,7 @@ def provider_login(
     provider: str = typer.Argument(..., help="OAuth provider (e.g. 'openai-codex', 'github-copilot')"),
 ):
     """Authenticate with an OAuth provider."""
-    from nanobot.providers.registry import PROVIDERS
+    from pepperbot.providers.registry import PROVIDERS
 
     key = provider.replace("-", "_")
     spec = next((s for s in PROVIDERS if s.name == key and s.is_oauth), None)

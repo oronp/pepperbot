@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 
 from loguru import logger
 
-from nanobot.bus.events import OutboundMessage
-from nanobot.bus.queue import MessageBus
-from nanobot.channels.base import BaseChannel
-from nanobot.config.schema import QQConfig
+from pepperbot.bus.events import OutboundMessage
+from pepperbot.bus.queue import MessageBus
+from pepperbot.channels.base import BaseChannel
+from pepperbot.config.schema import QQConfig
 
 try:
     import botpy
@@ -31,7 +31,7 @@ def _make_bot_class(channel: "QQChannel") -> "type[botpy.Client]":
 
     class _Bot(botpy.Client):
         def __init__(self):
-            # Disable botpy's file log — nanobot uses loguru; default "botpy.log" fails on read-only fs
+            # Disable botpy's file log — pepperbot uses loguru; default "botpy.log" fails on read-only fs
             super().__init__(intents=intents, ext_handlers=False)
 
         async def on_ready(self):
