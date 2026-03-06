@@ -22,9 +22,6 @@ ruff check pepperbot/
 
 # Format / fix lint
 ruff check --fix pepperbot/
-
-# Count core agent lines (per project convention)
-bash core_agent_lines.sh
 ```
 
 ## Architecture
