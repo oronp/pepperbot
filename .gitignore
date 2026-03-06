@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+*.egg-link
+pip-wheel-metadata/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# uv
+# uv.lock is intentionally tracked for reproducibility
+
+# Environment / secrets
+.env
+.env.*
+*.env
+!*.env.example
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Node.js (bridge/)
+bridge/node_modules/
+bridge/dist/
+bridge/*.log
+
+# WhatsApp session data (runtime auth state)
+bridge/auth_info_baileys/
+bridge/auth_state/
+
+# Runtime workspace data (user-specific, not for repo)
+~/.nanobot/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
