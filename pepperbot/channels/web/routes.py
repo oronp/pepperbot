@@ -5,7 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from aiohttp import web
+from aiohttp import web, WSMsgType
+from loguru import logger
 
 from pepperbot.channels.web.auth import authenticate, sign_session, verify_session
 
@@ -139,6 +140,50 @@ async def handle_post_profile(request: web.Request) -> web.Response:
     return web.json_response({"ok": True})
 
 
+async def handle_websocket(request: web.Request) -> web.WebSocketResponse:
+    session = request.get("session")
+    if session is None:
+        raise web.HTTPUnauthorized()
+
+    username = session.get("username", "anonymous")
+    channel = request.app[_CHANNEL_KEY]
+    chat_id = username  # one session per user
+
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+
+    channel._ws_connections[chat_id] = ws
+    logger.info("WebSocket connected: user={}", username)
+
+    try:
+        async for msg in ws:
+            if msg.type == WSMsgType.TEXT:
+                import json as _json
+                try:
+                    data = _json.loads(msg.data)
+                except Exception:
+                    continue
+
+                if data.get("type") == "message":
+                    from pepperbot.bus.events import InboundMessage
+
+                    inbound = InboundMessage(
+                        channel="web",
+                        sender_id=username,
+                        chat_id=chat_id,
+                        content=data.get("content", ""),
+                    )
+                    await channel.bus.publish_inbound(inbound)
+
+            elif msg.type in (WSMsgType.ERROR, WSMsgType.CLOSE):
+                break
+    finally:
+        channel._ws_connections.pop(chat_id, None)
+        logger.info("WebSocket disconnected: user={}", username)
+
+    return ws
+
+
 def setup_routes(app: web.Application, channel) -> None:
     """Register all routes on *app*. Middleware is set at Application creation."""
     app[_CHANNEL_KEY] = channel
@@ -150,3 +195,4 @@ def setup_routes(app: web.Application, channel) -> None:
     app.router.add_get("/api/usage", handle_get_usage)
     app.router.add_get("/api/profile", handle_get_profile)
     app.router.add_post("/api/profile", handle_post_profile)
+    app.router.add_get("/ws", handle_websocket)

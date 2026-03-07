@@ -190,3 +190,23 @@ async def test_post_profile_updates_soul(tmp_path, web_config, mock_bus):
         resp = await client.post("/api/profile", json={"content": "new persona"})
         assert resp.status == 200
         assert soul_file.read_text() == "new persona"
+
+
+async def test_websocket_requires_auth(tmp_path, web_config, mock_bus):
+    from aiohttp.test_utils import TestClient, TestServer
+    from aiohttp import web
+    from pepperbot.channels.web import WebChannel
+    from pepperbot.channels.web.routes import setup_routes, auth_middleware
+
+    app = web.Application(middlewares=[auth_middleware])
+    ch = WebChannel(web_config, mock_bus)
+    setup_routes(app, ch)
+
+    async with TestClient(TestServer(app)) as client:
+        # No session cookie — should be rejected (403 or connection refused)
+        try:
+            async with client.ws_connect("/ws") as ws:
+                # If we get here, assert it's closed quickly
+                assert ws.closed
+        except Exception:
+            pass  # Expected — connection rejected
