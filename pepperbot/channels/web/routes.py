@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from aiohttp import web
@@ -76,9 +77,76 @@ async def handle_logout(request: web.Request) -> web.Response:
     raise resp
 
 
+def _redact(obj, keys: set, depth: int = 0) -> None:
+    """Recursively redact sensitive keys in a dict."""
+    if depth > 10 or not isinstance(obj, dict):
+        return
+    for k in list(obj.keys()):
+        if any(s in k.lower() for s in keys):
+            obj[k] = "***"
+        else:
+            _redact(obj[k], keys, depth + 1)
+
+
+async def handle_get_settings(request: web.Request) -> web.Response:
+    config_file = Path("~/.pepperbot/config.json").expanduser()
+    if not config_file.exists():
+        return web.json_response({})
+    raw = json.loads(config_file.read_text())
+    _redact(raw, {"password", "token", "api_key", "secret", "apikey", "secretkey"})
+    return web.json_response(raw)
+
+
+async def handle_post_settings(request: web.Request) -> web.Response:
+    from pepperbot.config.schema import Config
+
+    body = await request.json()
+    config_file = Path("~/.pepperbot/config.json").expanduser()
+    try:
+        Config.model_validate(body)
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=400)
+    config_file.parent.mkdir(parents=True, exist_ok=True)
+    config_file.write_text(json.dumps(body, indent=2))
+    return web.json_response({"ok": True})
+
+
+async def handle_get_usage(request: web.Request) -> web.Response:
+    from pepperbot.channels.web.usage import get_usage_summary
+
+    channel = request.app[_CHANNEL_KEY]
+    workspace = Path(getattr(channel.config, "workspace", "~/.pepperbot/workspace")).expanduser()
+    log_file = workspace / "usage.jsonl"
+    return web.json_response(get_usage_summary(log_file))
+
+
+async def handle_get_profile(request: web.Request) -> web.Response:
+    channel = request.app[_CHANNEL_KEY]
+    workspace = Path(getattr(channel.config, "workspace", "~/.pepperbot/workspace")).expanduser()
+    soul_file = workspace / "SOUL.md"
+    content = soul_file.read_text() if soul_file.exists() else ""
+    return web.json_response({"content": content})
+
+
+async def handle_post_profile(request: web.Request) -> web.Response:
+    channel = request.app[_CHANNEL_KEY]
+    workspace = Path(getattr(channel.config, "workspace", "~/.pepperbot/workspace")).expanduser()
+    soul_file = workspace / "SOUL.md"
+    body = await request.json()
+    content = body.get("content", "")
+    soul_file.parent.mkdir(parents=True, exist_ok=True)
+    soul_file.write_text(content)
+    return web.json_response({"ok": True})
+
+
 def setup_routes(app: web.Application, channel) -> None:
     """Register all routes on *app*. Middleware is set at Application creation."""
     app[_CHANNEL_KEY] = channel
     app.router.add_get("/login", handle_login_get)
     app.router.add_post("/login", handle_login_post)
     app.router.add_get("/logout", handle_logout)
+    app.router.add_get("/api/settings", handle_get_settings)
+    app.router.add_post("/api/settings", handle_post_settings)
+    app.router.add_get("/api/usage", handle_get_usage)
+    app.router.add_get("/api/profile", handle_get_profile)
+    app.router.add_post("/api/profile", handle_post_profile)

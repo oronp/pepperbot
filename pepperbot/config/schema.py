@@ -187,6 +187,7 @@ class WebConfig(Base):
     secret_key: str = ""  # HMAC signing key; auto-generated on first run if empty
     allow_from: list[str] = Field(default_factory=lambda: ["*"])
     users_file: str = "~/.pepperbot/users.json"
+    workspace: str = "~/.pepperbot/workspace"
 
 
 class ChannelsConfig(Base):

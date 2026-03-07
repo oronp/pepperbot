@@ -130,3 +130,63 @@ async def test_login_with_invalid_credentials(tmp_path, web_config, mock_bus):
             allow_redirects=False,
         )
         assert resp.status in (200, 401)
+
+
+async def _make_authed_client(tmp_path, web_config, mock_bus):
+    """Helper: create a TestClient with a valid session cookie pre-set."""
+    from aiohttp.test_utils import TestClient, TestServer
+    from aiohttp import web
+    from pepperbot.channels.web import WebChannel
+    from pepperbot.channels.web.routes import setup_routes, auth_middleware, _CHANNEL_KEY
+    from pepperbot.channels.web.auth import hash_password, save_users, sign_session
+
+    users_file = tmp_path / "users.json"
+    save_users([{"username": "oron", "password_hash": hash_password("pass")}], users_file)
+    web_config.users_file = str(users_file)
+
+    app = web.Application(middlewares=[auth_middleware])
+    ch = WebChannel(web_config, mock_bus)
+    setup_routes(app, ch)
+
+    client = TestClient(TestServer(app))
+    await client.start_server()
+
+    # Set session cookie manually
+    token = sign_session({"username": "oron"}, secret=web_config.secret_key)
+    client.session.cookie_jar.update_cookies({"pepperbot_session": token})
+    return client
+
+
+async def test_get_usage_returns_empty_list(tmp_path, web_config, mock_bus):
+    web_config.workspace = str(tmp_path)
+    client = await _make_authed_client(tmp_path, web_config, mock_bus)
+    async with client:
+        resp = await client.get("/api/usage")
+        assert resp.status == 200
+        data = await resp.json()
+        assert data == []
+
+
+async def test_get_profile_returns_soul_content(tmp_path, web_config, mock_bus):
+    soul_file = tmp_path / "SOUL.md"
+    soul_file.write_text("You are a helpful assistant.")
+    web_config.workspace = str(tmp_path)
+
+    client = await _make_authed_client(tmp_path, web_config, mock_bus)
+    async with client:
+        resp = await client.get("/api/profile")
+        assert resp.status == 200
+        data = await resp.json()
+        assert data["content"] == "You are a helpful assistant."
+
+
+async def test_post_profile_updates_soul(tmp_path, web_config, mock_bus):
+    soul_file = tmp_path / "SOUL.md"
+    soul_file.write_text("old content")
+    web_config.workspace = str(tmp_path)
+
+    client = await _make_authed_client(tmp_path, web_config, mock_bus)
+    async with client:
+        resp = await client.post("/api/profile", json={"content": "new persona"})
+        assert resp.status == 200
+        assert soul_file.read_text() == "new persona"
