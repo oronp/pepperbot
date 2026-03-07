@@ -18,42 +18,6 @@
 
 📏 Real-time line count: run `bash core_agent_lines.sh` to verify anytime.
 
-## 📢 News
-
-- **2026-02-28** 🚀 Released **v0.1.4.post3** — cleaner context, hardened session history, and smarter agent. Please see [release notes](https://github.com/HKUDS/pepperbot/releases/tag/v0.1.4.post3) for details.
-- **2026-02-27** 🧠 Experimental thinking mode support, DingTalk media messages, Feishu and QQ channel fixes.
-- **2026-02-26** 🛡️ Session poisoning fix, WhatsApp dedup, Windows path guard, Mistral compatibility.
-- **2026-02-25** 🧹 New Matrix channel, cleaner session context, auto workspace template sync.
-- **2026-02-24** 🚀 Released **v0.1.4.post2** — a reliability-focused release with a redesigned heartbeat, prompt cache optimization, and hardened provider & channel stability. See [release notes](https://github.com/HKUDS/pepperbot/releases/tag/v0.1.4.post2) for details.
-- **2026-02-23** 🔧 Virtual tool-call heartbeat, prompt cache optimization, Slack mrkdwn fixes.
-- **2026-02-22** 🛡️ Slack thread isolation, Discord typing fix, agent reliability improvements.
-- **2026-02-21** 🎉 Released **v0.1.4.post1** — new providers, media support across channels, and major stability improvements. See [release notes](https://github.com/HKUDS/pepperbot/releases/tag/v0.1.4.post1) for details.
-- **2026-02-20** 🐦 Feishu now receives multimodal files from users. More reliable memory under the hood.
-- **2026-02-19** ✨ Slack now sends files, Discord splits long messages, and subagents work in CLI mode.
-
-<details>
-<summary>Earlier news</summary>
-
-- **2026-02-18** ⚡️ pepperbot now supports VolcEngine, MCP custom auth headers, and Anthropic prompt caching.
-- **2026-02-17** 🎉 Released **v0.1.4** — MCP support, progress streaming, new providers, and multiple channel improvements. Please see [release notes](https://github.com/HKUDS/pepperbot/releases/tag/v0.1.4) for details.
-- **2026-02-16** 🦞 pepperbot now integrates a [ClawHub](https://clawhub.ai) skill — search and install public agent skills.
-- **2026-02-15** 🔑 pepperbot now supports OpenAI Codex provider with OAuth login support.
-- **2026-02-14** 🔌 pepperbot now supports MCP! See [MCP section](#mcp-model-context-protocol) for details.
-- **2026-02-13** 🎉 Released **v0.1.3.post7** — includes security hardening and multiple improvements. **Please upgrade to the latest version to address security issues**. See [release notes](https://github.com/HKUDS/pepperbot/releases/tag/v0.1.3.post7) for more details.
-- **2026-02-12** 🧠 Redesigned memory system — Less code, more reliable. Join the [discussion](https://github.com/HKUDS/pepperbot/discussions/566) about it!
-- **2026-02-11** ✨ Enhanced CLI experience and added MiniMax support!
-- **2026-02-10** 🎉 Released **v0.1.3.post6** with improvements! Check the updates [notes](https://github.com/HKUDS/pepperbot/releases/tag/v0.1.3.post6) and our [roadmap](https://github.com/HKUDS/pepperbot/discussions/431).
-- **2026-02-09** 💬 Added Slack, Email, and QQ support — pepperbot now supports multiple chat platforms!
-- **2026-02-08** 🔧 Refactored Providers—adding a new LLM provider now takes just 2 simple steps! Check [here](#providers).
-- **2026-02-07** 🚀 Released **v0.1.3.post5** with Qwen support & several key improvements! Check [here](https://github.com/HKUDS/pepperbot/releases/tag/v0.1.3.post5) for details.
-- **2026-02-06** ✨ Added Moonshot/Kimi provider, Discord integration, and enhanced security hardening!
-- **2026-02-05** ✨ Added Feishu channel, DeepSeek provider, and enhanced scheduled tasks support!
-- **2026-02-04** 🚀 Released **v0.1.3.post4** with multi-provider & Docker support! Check [here](https://github.com/HKUDS/pepperbot/releases/tag/v0.1.3.post4) for details.
-- **2026-02-03** ⚡ Integrated vLLM for local LLM support and improved natural language task scheduling!
-- **2026-02-02** 🎉 pepperbot officially launched! Welcome to try 🐈 pepperbot!
-
-</details>
-
 ## Key Features of pepperbot:
 
 🪶 **Ultra-Lightweight**: Just ~4,000 lines of core agent code — 99% smaller than Clawdbot.
@@ -1068,37 +1032,6 @@ pepperbot/
 ├── config/         # ⚙️ Configuration
 └── cli/            # 🖥️ Commands
 ```
-
-## 🤝 Contribute & Roadmap
-
-PRs welcome! The codebase is intentionally small and readable. 🤗
-
-**Roadmap** — Pick an item and [open a PR](https://github.com/HKUDS/pepperbot/pulls)!
-
-- [ ] **Multi-modal** — See and hear (images, voice, video)
-- [ ] **Long-term memory** — Never forget important context
-- [ ] **Better reasoning** — Multi-step planning and reflection
-- [ ] **More integrations** — Calendar and more
-- [ ] **Self-improvement** — Learn from feedback and mistakes
-
-### Contributors
-
-<a href="https://github.com/HKUDS/pepperbot/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=HKUDS/pepperbot&max=100&columns=12&updated=20260210" alt="Contributors" />
-</a>
-
-
-## ⭐ Star History
-
-<div align="center">
-  <a href="https://star-history.com/#HKUDS/pepperbot&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/pepperbot&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/pepperbot&type=Date" />
-      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HKUDS/pepperbot&type=Date" style="border-radius: 15px; box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);" />
-    </picture>
-  </a>
-</div>
 
 <p align="center">
   <em> Thanks for visiting ✨ pepperbot!</em><br><br>
