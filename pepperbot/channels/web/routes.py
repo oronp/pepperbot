@@ -10,10 +10,11 @@ from pepperbot.channels.web.auth import authenticate, sign_session, verify_sessi
 
 _COOKIE_NAME = "pepperbot_session"
 _LOGIN_HTML = Path(__file__).parent / "static" / "login.html"
+_CHANNEL_KEY: web.AppKey = web.AppKey("channel")
 
 
 def _get_session(request: web.Request) -> dict | None:
-    channel = request.app["channel"]
+    channel = request.app[_CHANNEL_KEY]
     token = request.cookies.get(_COOKIE_NAME)
     if not token:
         return None
@@ -52,7 +53,7 @@ async def handle_login_get(request: web.Request) -> web.Response:
 
 
 async def handle_login_post(request: web.Request) -> web.Response:
-    channel = request.app["channel"]
+    channel = request.app[_CHANNEL_KEY]
     data = await request.post()
     username = str(data.get("username", "")).strip()
     password = str(data.get("password", ""))
@@ -77,7 +78,7 @@ async def handle_logout(request: web.Request) -> web.Response:
 
 def setup_routes(app: web.Application, channel) -> None:
     """Register all routes on *app*. Middleware is set at Application creation."""
-    app["channel"] = channel
+    app[_CHANNEL_KEY] = channel
     app.router.add_get("/login", handle_login_get)
     app.router.add_post("/login", handle_login_post)
     app.router.add_get("/logout", handle_logout)
