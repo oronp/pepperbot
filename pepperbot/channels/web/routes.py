@@ -115,14 +115,14 @@ async def handle_get_usage(request: web.Request) -> web.Response:
     from pepperbot.channels.web.usage import get_usage_summary
 
     channel = request.app[_CHANNEL_KEY]
-    workspace = Path(getattr(channel.config, "workspace", "~/.pepperbot/workspace")).expanduser()
+    workspace = Path(channel.config.workspace).expanduser()
     log_file = workspace / "usage.jsonl"
     return web.json_response(get_usage_summary(log_file))
 
 
 async def handle_get_profile(request: web.Request) -> web.Response:
     channel = request.app[_CHANNEL_KEY]
-    workspace = Path(getattr(channel.config, "workspace", "~/.pepperbot/workspace")).expanduser()
+    workspace = Path(channel.config.workspace).expanduser()
     soul_file = workspace / "SOUL.md"
     content = soul_file.read_text() if soul_file.exists() else ""
     return web.json_response({"content": content})
@@ -130,7 +130,7 @@ async def handle_get_profile(request: web.Request) -> web.Response:
 
 async def handle_post_profile(request: web.Request) -> web.Response:
     channel = request.app[_CHANNEL_KEY]
-    workspace = Path(getattr(channel.config, "workspace", "~/.pepperbot/workspace")).expanduser()
+    workspace = Path(channel.config.workspace).expanduser()
     soul_file = workspace / "SOUL.md"
     body = await request.json()
     content = body.get("content", "")
