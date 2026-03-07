@@ -44,7 +44,7 @@ def test_init_prompt_session_creates_session():
     commands._PROMPT_SESSION = None
 
     with patch("pepperbot.cli.commands.PromptSession") as MockSession, \
-         patch("pepperbot.cli.commands.FileHistory") as MockHistory, \
+         patch("pepperbot.cli.commands.FileHistory"), \
          patch("pathlib.Path.home") as mock_home:
 
         mock_home.return_value = MagicMock()

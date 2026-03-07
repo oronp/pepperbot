@@ -19,7 +19,7 @@ def mock_paths():
     """Mock config/workspace paths for test isolation."""
     with patch("pepperbot.config.loader.get_config_path") as mock_cp, \
          patch("pepperbot.config.loader.save_config") as mock_sc, \
-         patch("pepperbot.config.loader.load_config") as mock_lc, \
+         patch("pepperbot.config.loader.load_config"), \
          patch("pepperbot.utils.helpers.get_workspace_path") as mock_ws:
 
         base_dir = Path("./test_onboard_data")
