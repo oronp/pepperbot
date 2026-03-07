@@ -7,7 +7,6 @@ from typing import Any
 
 from loguru import logger
 
-from pepperbot.bus.events import OutboundMessage
 from pepperbot.bus.queue import MessageBus
 from pepperbot.channels.base import BaseChannel
 from pepperbot.config.schema import Config
@@ -136,18 +135,6 @@ class ChannelManager:
                 logger.info("QQ channel enabled")
             except ImportError as e:
                 logger.warning("QQ channel not available: {}", e)
-
-        # Matrix channel
-        if self.config.channels.matrix.enabled:
-            try:
-                from pepperbot.channels.matrix import MatrixChannel
-                self.channels["matrix"] = MatrixChannel(
-                    self.config.channels.matrix,
-                    self.bus,
-                )
-                logger.info("Matrix channel enabled")
-            except ImportError as e:
-                logger.warning("Matrix channel not available: {}", e)
 
         self._validate_allow_from()
 
