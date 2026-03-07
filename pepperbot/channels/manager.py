@@ -7,7 +7,6 @@ from typing import Any
 
 from loguru import logger
 
-from pepperbot.bus.events import OutboundMessage
 from pepperbot.bus.queue import MessageBus
 from pepperbot.channels.base import BaseChannel
 from pepperbot.config.schema import Config
