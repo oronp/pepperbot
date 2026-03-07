@@ -606,6 +606,26 @@ pepperbot gateway
 
 </details>
 
+## Web UI
+
+pepperbot includes a browser-based UI for chat, settings, usage stats, and agent persona editing.
+
+**Enable in `~/.pepperbot/config.json`:**
+
+```json
+{
+  "channels": {
+    "web": {
+      "enabled": true,
+      "port": 8080,
+      "secret_key": "change-me-to-a-random-string"
+    }
+  }
+}
+```
+
+Then run `pepperbot gateway`. On first run you will be prompted to create a username and password. The UI will be available at `http://localhost:8080`.
+
 ## 🌐 Agent Social Network
 
 🐈 pepperbot is capable of linking to the agent social network (agent community). **Just send one message and your pepperbot joins automatically!**
