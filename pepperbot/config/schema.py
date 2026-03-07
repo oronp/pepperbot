@@ -178,6 +178,13 @@ class QQConfig(Base):
     )  # Allowed user openids (empty = public access)
 
 
+class WebConfig(Base):
+    """Web UI channel configuration."""
+
+    enabled: bool = False
+    port: int = 8080
+    host: str = "127.0.0.1"
+    secret_key: str = ""  # HMAC signing key; auto-generated on first run if empty
 
 
 class ChannelsConfig(Base):
@@ -194,6 +201,7 @@ class ChannelsConfig(Base):
     email: EmailConfig = Field(default_factory=EmailConfig)
     slack: SlackConfig = Field(default_factory=SlackConfig)
     qq: QQConfig = Field(default_factory=QQConfig)
+    web: WebConfig = Field(default_factory=WebConfig)
 
 
 class AgentDefaults(Base):
