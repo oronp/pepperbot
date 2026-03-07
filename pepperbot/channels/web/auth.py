@@ -42,7 +42,7 @@ def verify_password(password: str, stored_hash: str) -> bool:
 
 def sign_session(payload: dict, *, secret: str) -> str:
     """Return a signed token encoding *payload*."""
-    data = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode()
+    data = base64.urlsafe_b64encode(json.dumps(payload, sort_keys=True).encode()).decode()
     sig = hmac.new(secret.encode(), data.encode(), hashlib.sha256).hexdigest()
     return f"{data}.{sig}"
 

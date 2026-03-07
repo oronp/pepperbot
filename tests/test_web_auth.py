@@ -1,10 +1,4 @@
 """Tests for web UI auth module."""
-import json
-import tempfile
-from pathlib import Path
-
-import pytest
-
 from pepperbot.channels.web.auth import (
     hash_password,
     verify_password,
