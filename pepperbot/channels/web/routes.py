@@ -158,9 +158,8 @@ async def handle_websocket(request: web.Request) -> web.WebSocketResponse:
     try:
         async for msg in ws:
             if msg.type == WSMsgType.TEXT:
-                import json as _json
                 try:
-                    data = _json.loads(msg.data)
+                    data = json.loads(msg.data)
                 except Exception:
                     continue
 

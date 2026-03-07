@@ -203,10 +203,7 @@ async def test_websocket_requires_auth(tmp_path, web_config, mock_bus):
     setup_routes(app, ch)
 
     async with TestClient(TestServer(app)) as client:
-        # No session cookie — should be rejected (403 or connection refused)
-        try:
-            async with client.ws_connect("/ws") as ws:
-                # If we get here, assert it's closed quickly
-                assert ws.closed
-        except Exception:
-            pass  # Expected — connection rejected
+        # No session cookie — middleware should redirect to /login
+        resp = await client.get("/ws", allow_redirects=False)
+        assert resp.status == 302
+        assert "/login" in resp.headers.get("Location", "")
