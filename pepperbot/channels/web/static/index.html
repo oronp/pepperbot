@@ -1,5 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>pepperbot</title></head>
-<body><h1>pepperbot web UI — coming soon</h1></body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pepperbot</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">pepperbot</span>
+    <a href="#" data-section="chat">Chat</a>
+    <a href="#" data-section="usage">Usage</a>
+    <a href="#" data-section="settings">Settings</a>
+    <a href="#" data-section="profile">Profile</a>
+    <a href="/logout">Logout</a>
+  </nav>
+
+  <section id="chat" class="section">
+    <div id="messages"></div>
+    <div id="chat-input-row">
+      <input id="chat-input" type="text" placeholder="Message pepperbot…" autocomplete="off">
+      <button id="send-btn">Send</button>
+    </div>
+  </section>
+
+  <section id="usage" class="section">
+    <div class="panel">
+      <h2>Usage</h2>
+      <table id="usage-table">
+        <thead>
+          <tr><th>Provider</th><th>Model</th><th>Input tokens</th><th>Output tokens</th><th>Requests</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="settings" class="section">
+    <div class="panel">
+      <h2>Settings</h2>
+      <p style="margin-bottom:0.75rem;color:#666;font-size:0.9rem">Edit config.json directly. Sensitive fields are redacted.</p>
+      <textarea id="settings-json" class="settings-json"></textarea>
+      <button id="save-settings-btn" class="save-btn">Save</button>
+      <div id="settings-status" class="status"></div>
+    </div>
+  </section>
+
+  <section id="profile" class="section">
+    <div class="panel">
+      <h2>Profile (SOUL.md)</h2>
+      <p style="margin-bottom:0.75rem;color:#666;font-size:0.9rem">Define your agent's persona.</p>
+      <textarea id="soul-editor" class="soul-editor"></textarea>
+      <button id="save-profile-btn" class="save-btn">Save</button>
+      <div id="profile-status" class="status"></div>
+    </div>
+  </section>
+
+  <script src="/static/app.js"></script>
+</body>
 </html>

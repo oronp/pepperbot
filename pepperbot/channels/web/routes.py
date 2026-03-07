@@ -12,6 +12,7 @@ from pepperbot.channels.web.auth import authenticate, sign_session, verify_sessi
 
 _COOKIE_NAME = "pepperbot_session"
 _LOGIN_HTML = Path(__file__).parent / "static" / "login.html"
+_INDEX_HTML = Path(__file__).parent / "static" / "index.html"
 _CHANNEL_KEY: web.AppKey = web.AppKey("channel")
 
 
@@ -47,6 +48,10 @@ async def auth_middleware(request: web.Request, handler):
 
     request["session"] = session
     return await handler(request)
+
+
+async def handle_index(request: web.Request) -> web.Response:
+    return web.Response(text=_INDEX_HTML.read_text(), content_type="text/html")
 
 
 async def handle_login_get(request: web.Request) -> web.Response:
@@ -186,6 +191,7 @@ async def handle_websocket(request: web.Request) -> web.WebSocketResponse:
 def setup_routes(app: web.Application, channel) -> None:
     """Register all routes on *app*. Middleware is set at Application creation."""
     app[_CHANNEL_KEY] = channel
+    app.router.add_get("/", handle_index)
     app.router.add_get("/login", handle_login_get)
     app.router.add_post("/login", handle_login_post)
     app.router.add_get("/logout", handle_logout)
