@@ -65,3 +65,68 @@ async def test_webchannel_send_final_message(web_config, mock_bus):
     calls = [c.args[0] for c in mock_ws.send_json.call_args_list]
     assert {"type": "message", "content": "final answer"} in calls
     assert {"type": "done"} in calls
+
+
+async def test_unauthenticated_request_redirects_to_login(web_config, mock_bus):
+    from aiohttp.test_utils import TestClient, TestServer
+    from aiohttp import web
+    from pepperbot.channels.web import WebChannel
+    from pepperbot.channels.web.routes import setup_routes, auth_middleware
+
+    app = web.Application(middlewares=[auth_middleware])
+    ch = WebChannel(web_config, mock_bus)
+    setup_routes(app, ch)
+
+    async with TestClient(TestServer(app)) as client:
+        resp = await client.get("/api/settings", allow_redirects=False)
+        assert resp.status == 302
+        assert "/login" in resp.headers.get("Location", "")
+
+
+async def test_login_with_valid_credentials(tmp_path, web_config, mock_bus):
+    from aiohttp.test_utils import TestClient, TestServer
+    from aiohttp import web
+    from pepperbot.channels.web import WebChannel
+    from pepperbot.channels.web.routes import setup_routes, auth_middleware
+    from pepperbot.channels.web.auth import hash_password, save_users
+
+    users_file = tmp_path / "users.json"
+    save_users([{"username": "oron", "password_hash": hash_password("pass")}], users_file)
+
+    web_config.users_file = str(users_file)
+    app = web.Application(middlewares=[auth_middleware])
+    ch = WebChannel(web_config, mock_bus)
+    setup_routes(app, ch)
+
+    async with TestClient(TestServer(app)) as client:
+        resp = await client.post(
+            "/login",
+            data={"username": "oron", "password": "pass"},
+            allow_redirects=False,
+        )
+        assert resp.status == 302
+        assert resp.headers.get("Set-Cookie", "") or resp.cookies
+
+
+async def test_login_with_invalid_credentials(tmp_path, web_config, mock_bus):
+    from aiohttp.test_utils import TestClient, TestServer
+    from aiohttp import web
+    from pepperbot.channels.web import WebChannel
+    from pepperbot.channels.web.routes import setup_routes, auth_middleware
+    from pepperbot.channels.web.auth import hash_password, save_users
+
+    users_file = tmp_path / "users.json"
+    save_users([{"username": "oron", "password_hash": hash_password("pass")}], users_file)
+
+    web_config.users_file = str(users_file)
+    app = web.Application(middlewares=[auth_middleware])
+    ch = WebChannel(web_config, mock_bus)
+    setup_routes(app, ch)
+
+    async with TestClient(TestServer(app)) as client:
+        resp = await client.post(
+            "/login",
+            data={"username": "oron", "password": "wrong"},
+            allow_redirects=False,
+        )
+        assert resp.status in (200, 401)

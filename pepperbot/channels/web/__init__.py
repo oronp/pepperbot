@@ -26,11 +26,11 @@ class WebChannel(BaseChannel):
         self._ws_connections: dict[str, Any] = {}  # chat_id -> WebSocketResponse
 
     async def start(self) -> None:
-        from pepperbot.channels.web.routes import setup_routes
+        from pepperbot.channels.web.routes import auth_middleware, setup_routes
 
         static_dir = Path(__file__).parent / "static"
 
-        self._app = web.Application()
+        self._app = web.Application(middlewares=[auth_middleware])
         setup_routes(self._app, self)
         if static_dir.exists():
             self._app.router.add_static("/static", static_dir, name="static")
