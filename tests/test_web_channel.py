@@ -137,7 +137,7 @@ async def _make_authed_client(tmp_path, web_config, mock_bus):
     from aiohttp.test_utils import TestClient, TestServer
     from aiohttp import web
     from pepperbot.channels.web import WebChannel
-    from pepperbot.channels.web.routes import setup_routes, auth_middleware, _CHANNEL_KEY
+    from pepperbot.channels.web.routes import setup_routes, auth_middleware
     from pepperbot.channels.web.auth import hash_password, save_users, sign_session
 
     users_file = tmp_path / "users.json"

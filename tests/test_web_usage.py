@@ -1,9 +1,4 @@
 """Tests for web UI usage tracking module."""
-from pathlib import Path
-from datetime import datetime, timezone
-
-import pytest
-
 from pepperbot.channels.web.usage import append_usage, get_usage_summary
 
 
