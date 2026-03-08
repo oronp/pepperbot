@@ -136,6 +136,18 @@ class ChannelManager:
             except ImportError as e:
                 logger.warning("QQ channel not available: {}", e)
 
+        # Web UI channel
+        if self.config.channels.web.enabled:
+            try:
+                from pepperbot.channels.web import WebChannel
+                web_cfg = self.config.channels.web
+                # Sync workspace from agents config so web routes use the correct path
+                web_cfg.workspace = self.config.agents.defaults.workspace
+                self.channels["web"] = WebChannel(web_cfg, self.bus)
+                logger.info("Web UI channel enabled on port {}", web_cfg.port)
+            except ImportError as e:
+                logger.warning("Web UI channel not available: {}", e)
+
         self._validate_allow_from()
 
     def _validate_allow_from(self) -> None:

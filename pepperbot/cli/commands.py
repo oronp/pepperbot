@@ -278,6 +278,29 @@ def gateway(
     if workspace:
         config.agents.defaults.workspace = workspace
 
+    # First-run: create initial web UI user if web channel is enabled and users.json is missing
+    if config.channels.web.enabled:
+        from pathlib import Path as _Path
+        users_file = _Path(config.channels.web.users_file).expanduser()
+        if not users_file.exists():
+            import getpass
+            from pepperbot.channels.web.auth import hash_password, save_users
+            console.print("[bold yellow]Web UI enabled but no users found.[/bold yellow]")
+            console.print("Creating your first user. Press Ctrl+C to skip.")
+            try:
+                username = input("  Username [admin]: ").strip() or "admin"
+                password = getpass.getpass("  Password: ")
+                save_users(
+                    [{"username": username, "password_hash": hash_password(password)}],
+                    users_file,
+                )
+                console.print(
+                    f"[green]User '{username}' created. "
+                    f"Web UI at http://localhost:{config.channels.web.port}[/green]"
+                )
+            except (KeyboardInterrupt, EOFError):
+                console.print("[yellow]Skipped user creation.[/yellow]")
+
     console.print(f"{__logo__} Starting pepperbot gateway on port {port}...")
     sync_workspace_templates(config.workspace_path)
     bus = MessageBus()
