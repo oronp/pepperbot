@@ -28,6 +28,21 @@ class WebChannel(BaseChannel):
     async def start(self) -> None:
         from pepperbot.channels.web.routes import auth_middleware, setup_routes
 
+        # Auto-generate and persist secret_key if empty
+        if not self.config.secret_key:
+            import secrets as _secrets
+            import json as _json
+            self.config.secret_key = _secrets.token_hex(32)
+            config_file = Path("~/.pepperbot/config.json").expanduser()
+            if config_file.exists():
+                try:
+                    cfg = _json.loads(config_file.read_text())
+                    cfg.setdefault("channels", {}).setdefault("web", {})["secretKey"] = self.config.secret_key
+                    config_file.write_text(_json.dumps(cfg, indent=2))
+                    logger.info("Generated and saved new web UI secret_key")
+                except Exception:
+                    logger.warning("Could not persist secret_key to config.json; key will change on restart")
+
         static_dir = Path(__file__).parent / "static"
 
         self._app = web.Application(middlewares=[auth_middleware])
@@ -59,8 +74,25 @@ class WebChannel(BaseChannel):
             if is_progress and not is_tool_hint:
                 await ws.send_json({"type": "chunk", "content": msg.content})
             elif not is_progress:
-                # Final message — send content then done signal
                 await ws.send_json({"type": "message", "content": msg.content})
                 await ws.send_json({"type": "done"})
+
+                # Log usage if present in metadata
+                usage = msg.metadata.get("_usage")
+                if usage and usage.get("requests", 0) > 0:
+                    from pepperbot.channels.web.usage import append_usage
+                    workspace = Path(self.config.workspace).expanduser()
+                    log_file = workspace / "usage.jsonl"
+                    try:
+                        append_usage(
+                            log_file,
+                            provider=msg.metadata.get("provider", "unknown"),
+                            model=msg.metadata.get("model", "unknown"),
+                            input_tokens=usage.get("prompt_tokens", 0),
+                            output_tokens=usage.get("completion_tokens", 0),
+                            requests=usage.get("requests", 1),
+                        )
+                    except Exception:
+                        logger.warning("Failed to log usage data")
         except Exception:
             logger.exception("WebChannel.send() error for chat_id={}", msg.chat_id)
