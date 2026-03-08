@@ -1,6 +1,5 @@
 """Tests that the agent loop threads usage data into the final OutboundMessage."""
 from unittest.mock import AsyncMock, MagicMock
-import pytest
 
 from pepperbot.agent.loop import AgentLoop
 from pepperbot.providers.base import LLMResponse
@@ -25,7 +24,6 @@ def _make_loop():
     return loop
 
 
-@pytest.mark.asyncio
 async def test_run_agent_loop_returns_usage():
     loop = _make_loop()
     loop.provider.chat = AsyncMock(return_value=LLMResponse(
@@ -41,7 +39,6 @@ async def test_run_agent_loop_returns_usage():
     assert usage["total_tokens"] == 15
 
 
-@pytest.mark.asyncio
 async def test_run_agent_loop_accumulates_usage_across_iterations():
     loop = _make_loop()
     call_count = 0

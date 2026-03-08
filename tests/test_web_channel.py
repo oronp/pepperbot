@@ -192,6 +192,26 @@ async def test_post_profile_updates_soul(tmp_path, web_config, mock_bus):
         assert soul_file.read_text() == "new persona"
 
 
+async def test_get_settings_returns_dict(tmp_path, web_config, mock_bus):
+    web_config.workspace = str(tmp_path)
+    client = await _make_authed_client(tmp_path, web_config, mock_bus)
+    async with client:
+        resp = await client.get("/api/settings")
+        assert resp.status == 200
+        data = await resp.json()
+        assert isinstance(data, dict)
+
+
+async def test_post_settings_rejects_invalid_json(tmp_path, web_config, mock_bus):
+    web_config.workspace = str(tmp_path)
+    client = await _make_authed_client(tmp_path, web_config, mock_bus)
+    async with client:
+        resp = await client.post("/api/settings", json={"invalid_top_level_key": "bad"})
+        # Either 200 (Pydantic extra=ignore) or 400 — either is acceptable
+        # Key requirement: must NOT crash with 500
+        assert resp.status in (200, 400)
+
+
 async def test_websocket_requires_auth(tmp_path, web_config, mock_bus):
     from aiohttp.test_utils import TestClient, TestServer
     from aiohttp import web

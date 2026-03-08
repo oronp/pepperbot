@@ -112,9 +112,26 @@ async def handle_post_settings(request: web.Request) -> web.Response:
         Config.model_validate(body)
     except Exception as e:
         return web.json_response({"error": str(e)}, status=400)
+
+    # Merge with existing config to restore any redacted ("***") fields
+    if config_file.exists():
+        existing = json.loads(config_file.read_text())
+        _restore_redacted(body, existing)
+
     config_file.parent.mkdir(parents=True, exist_ok=True)
     config_file.write_text(json.dumps(body, indent=2))
     return web.json_response({"ok": True})
+
+
+def _restore_redacted(new: dict, old: dict, depth: int = 0) -> None:
+    """Replace '***' values in *new* with the real value from *old*."""
+    if depth > 10 or not isinstance(new, dict) or not isinstance(old, dict):
+        return
+    for k in new:
+        if new[k] == "***" and k in old:
+            new[k] = old[k]
+        elif isinstance(new[k], dict):
+            _restore_redacted(new[k], old.get(k, {}), depth + 1)
 
 
 async def handle_get_usage(request: web.Request) -> web.Response:
